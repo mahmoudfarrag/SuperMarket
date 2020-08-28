@@ -1,0 +1,180 @@
+﻿@model SuperMarket.Dtos.SupplyOperationDto
+@{
+    ViewBag.Title = "SupplyOperationForm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>New Supply Operation</h2>
+
+@using (Html.BeginForm("Save", "SupplyOperations"))
+{
+
+    <div class="form-group " >
+        @Html.LabelFor(m => m.SupplierId,new { @class="form-label"})
+        @Html.DropDownListFor(m => m.SupplierId, Enumerable.Empty<SelectListItem>(), "", new { @class = "selectControll", @id = "SuppliersDropdown" })
+       <a class="btn btn-default" id="viewSupplierForm"><i class="fa fa-plus fa-lg"></i>Add</a>
+     
+    </div>
+    <div class="form-group"> 
+        @Html.Label("Categories", new { @class = "form-label" })
+        @Html.DropDownList("categories", Enumerable.Empty<SelectListItem>(), "", new { @class = "selectControll", @id = "CategoriesDropdown" })
+        <a class="btn btn-default" id="viewCategoryForm"><i class="fa fa-plus fa-lg"></i>Add</a>
+     </div>
+     <div class="form-group">
+         @Html.LabelFor(m => m.ProductId, new { @class = "form-label" })
+         @Html.DropDownListFor(m => m.ProductId, Enumerable.Empty<SelectListItem>(), "", new { @class = "selectControll", @id = "ProductsDropdown" })
+         <a class="btn btn-default" id="viewProductForm"><i class="fa fa-plus fa-lg"></i>Add</a>
+     </div>
+     <div class="form-group">
+         @Html.LabelFor(m => m.Quantity, new { @class = "form-label" })
+         @Html.TextBoxFor(m => m.Quantity, new { @class = "form-control" }) 
+      </div>
+      <div class="form-group">
+         @Html.LabelFor(m => m.SupplayDate, new { @class = "form-label" })
+         @Html.TextBoxFor(m => m.SupplayDate, "{0:d MMM yyy}", new { @class = "form-control" })
+       </div>
+    <button class="btn btn-primary" type="submit">Save</button>
+
+}
+
+
+
+ @section scripts{
+   <script>
+       $(document).ready(function () {
+
+           //implement PopUp for add buttons
+           var popUp;
+           $("#viewSupplierForm").on("click", function () {
+               var formDiv = $('<div/>')
+               $.get("/Suppliers/New")
+               .done(function (formHtml) {
+                   formDiv.html(formHtml);
+               
+                   popUp = formDiv.dialog({
+                       autoOpen: true,
+                       resizable: false,
+                       title: 'Fill Supplier Details',
+                       height: 500,
+                       width: 700,
+                       close: function () {
+                           popUp.dialog('destroy').remove();
+                       }
+                   });
+                
+               });
+           });
+           $("#viewCategoryForm").on("click", function () {
+               var formDiv = $('<div/>')
+               $.get("/Categories/New")
+               .done(function (formHtml) {
+                   formDiv.html(formHtml);
+
+                   popUp = formDiv.dialog({
+                       autoOpen: true,
+                       resizable: false,
+                       title: 'Fill Category Details',
+                       height: 500,
+                       width: 700,
+                       close: function () {
+                           popUp.dialog('destroy').remove();
+                       }
+                   });
+
+               });
+           });
+           //3-product popUp
+           $("#viewProductForm").on("click", function () {
+               var categoryId = $("#CategoriesDropdown").val();
+               if (categoryId <= 0 || categoryId == null) {
+                   alert("please Select Category of Product ")
+               }
+               else {
+                   var formDiv = $('<div/>')
+
+                   $.get("/Products/New2?catId=" + categoryId)
+                   .done(function (formHtml) {
+                       formDiv.html(formHtml);
+
+
+                       popUp = formDiv.dialog({
+                           autoOpen: true,
+                           resizable: false,
+                           title: 'Fill Product Details',
+                           height: 500,
+                           width: 700,
+                           //close: function () {
+                           //    popUp.dialog('destroy').remove();
+                           //}
+                       });
+
+                   });
+               }
+             
+           });
+
+           //ajax call for populate suppliers Dropdwon
+           $.ajax({
+               type: "GET",
+               url: "/Suppliers/getSuppliers",
+               success: function (data) {
+                   //data is about object {} contains array called data
+                   var suppliers = data["data"];
+
+                   var s = '<option value="-1">Please Select a Supplier</option>';
+                   for (var i = 0; i < suppliers.length; i++) {
+                       s += '<option value="' + suppliers[i].Id + '">' + suppliers[i].Name + '</option>';
+                   }
+                   $("#SuppliersDropdown").html(s);
+                   $("#SuppliersDropdown2").html(s);
+
+               }
+           });
+
+           //ajax call for populate Categories Dropdwon
+           $.ajax({
+               type: "GET",
+               url: "/Categories/GetCategories",
+               success: function (data) {
+                   //data is about object {} contains array called data
+                   var categories = data["data"];
+
+                   var s = '<option value="-1">Please Select a Category</option>';
+                   for (var i = 0; i < categories.length; i++) {
+                       s += '<option value="' + categories[i].Id + '">' + categories[i].Name + '</option>';
+                   }
+                   $("#CategoriesDropdown").html(s);
+               }
+           });
+
+           //load products bassed on category selection
+
+           $("#CategoriesDropdown").change(function () {
+               var id = $(this).val();
+               $.ajax({
+                   type: "GET",
+                   url: "/Products/getProducts/" + id,
+                   success: function (data) {
+                       console.log(data["data"]);
+                       //data is about object {} contains array called data
+                       var products = data["data"];
+
+                       var s = '<option value="-1">Please Select a product</option>';
+                       for (var i = 0; i < products.length; i++) {
+                           s += '<option value="' + products[i].Id + '">' + products[i].Name + '</option>';
+                       }
+                       $("#ProductsDropdown").html(s);
+                   }
+               });
+           });
+
+         
+         
+         
+          
+
+       });
+
+ </script>
+
+}

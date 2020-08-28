@@ -1,0 +1,30 @@
+﻿@model SuperMarket.ViewModels.ProductViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Products</h2>
+
+
+@Html.ActionLink("New product","New","Products", new {categoryId=Model.Category.Id},new { @class="btn btn-primary"})
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Amount Avaliable</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model.Products)
+        {
+            <tr>
+                <td>@Html.ActionLink(product.Name, "Edit", "Products", new { id = product.Id }, null)</td>
+                <td>@product.Price</td>
+                <td>@product.NumberInStock</td>
+              
+            </tr>
+        }
+    </tbody>
+</table>

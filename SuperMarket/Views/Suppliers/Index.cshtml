@@ -1,0 +1,42 @@
+﻿
+@{
+    ViewBag.Title = "Suppliers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Suppliers</h2>
+<table id="suppliers" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Address</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+
+            var table = $("#suppliers").DataTable({
+                ajax: {
+                    url: "/Suppliers/getSuppliers",
+                    type: "GET",
+                    datatype:"json"
+                },
+                columns: [
+                    { data: "Name" },
+                    { data: "Phone" },
+                     { data: "Email" },
+                     { data: "Address" }
+
+                ]
+
+            });
+        });
+    </script>
+
+}

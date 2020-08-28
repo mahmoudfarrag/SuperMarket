@@ -1,0 +1,27 @@
+﻿@model  IEnumerable<SuperMarket.Models.Category>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Categories</h2>
+@Html.ActionLink("New Category","New","Categories",new { @class="btn btn-primary"})
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Products</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@Html.ActionLink(category.Name, "Edit", "Categories", new { id = category.Id }, null)</td>
+                <td>@Html.ActionLink("View Products", "getProds", "Products", new { id = category.Id }, null)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
